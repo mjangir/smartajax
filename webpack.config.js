@@ -3,15 +3,16 @@ var UglifyJsPlugin = webpack.optimize.UglifyJsPlugin;
 var path = require('path');
 var env = require('yargs').argv.mode;
 
-var libraryName = 'Library';
+var libraryName = 'Smartajax';
+var outputFileName = 'smartajax';
 
 var plugins = [], outputFile;
 
 if (env === 'build') {
   plugins.push(new UglifyJsPlugin({ minimize: true }));
-  outputFile = libraryName + '.min.js';
+  outputFile = outputFileName + '.min.js';
 } else {
-  outputFile = libraryName + '.js';
+  outputFile = outputFileName + '.js';
 }
 
 var config = {
@@ -25,7 +26,8 @@ var config = {
     umdNamedDefine: true
   },
   externals: {
-    "jquery": "jQuery"
+    "jquery": "jQuery",
+    "bootstrap": "bootstrap"
   },
   module: {
     loaders: [
