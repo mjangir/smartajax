@@ -1,8 +1,13 @@
-export default class Library {
-  constructor() {
-    this._name = 'Library';
+(function (root, factory) {
+  if (typeof exports === 'object' && typeof module !== 'undefined') {
+    module.exports = factory(require('jquery'), global || root);
+  } else {
+    root.Smartajax = factory(root.jQuery, root);
   }
-  get name() {
-    return this._name;
-  }
-}
+}(typeof window !== 'undefined' ? window : this, function ($, root) {
+  console.log($);
+  return (function ($, root) {
+    console.log('Hey Smartajax initialised');
+  })();
+
+}));

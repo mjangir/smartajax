@@ -24,6 +24,9 @@ var config = {
     libraryTarget: 'umd',
     umdNamedDefine: true
   },
+  externals: {
+    "jquery": "jQuery"
+  },
   module: {
     loaders: [
       {
