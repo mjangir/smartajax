@@ -5,9 +5,8 @@
     root.Smartajax = factory(root.jQuery, root);
   }
 }(typeof window !== 'undefined' ? window : this, function ($, root) {
-  console.log($);
   return (function ($, root) {
-    console.log('Hey Smartajax initialised');
-  })();
+    console.log('Hey Smartajax initialised', $.ajax());
+  })($, root);
 
 }));
