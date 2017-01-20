@@ -1,6 +1,6 @@
 (function (root, factory) {
   if (typeof exports === 'object' && typeof module !== 'undefined') {
-    module.exports = factory(require('jquery'), require('toastr'), global || root);
+    module.exports = factory(require('jquery'), require('./toastr'), global || root);
   } else {
     root.Smartajax = factory(root.jQuery, root.bootstrap, root.toastr, root);
   }
@@ -85,7 +85,7 @@
   };
 
   var backgroundInit = function () {
-    jQuery('body').append(createModal());
+    document.body.innerHTML += createModal();
   };
 
   var Smartajax = function (elements, options) {
@@ -199,6 +199,27 @@
   };
 
   backgroundInit();
+  toastr.options = {
+  "closeButton": true,
+  "debug": true,
+  "newestOnTop": true,
+  "progressBar": true,
+  "positionClass": "toast-top-right",
+  "preventDuplicates": false,
+  "onclick": null,
+  "showDuration": "300",
+  "hideDuration": "1000",
+  "timeOut": "10000",
+  "extendedTimeOut": "1000",
+  "showEasing": "swing",
+  "hideEasing": "linear",
+  "showMethod": "fadeIn",
+  "hideMethod": "fadeOut"
+}
+  toastr.info('Are you the 6 fingered man?', 'Hello this is info message');
+    toastr.success('Are you the 6 fingered man?', 'Hello this is info message');
+      toastr.warning('Are you the 6 fingered man?', 'Hello this is info message');
+        toastr.error('Are you the 6 fingered man?', 'Hello this is info message');
   return Smartajax;
 
 }));
