@@ -1,10 +1,10 @@
 (function (root, factory) {
   if (typeof exports === 'object' && typeof module !== 'undefined') {
-    module.exports = factory(require('jquery'), require('./toastr'), global || root);
+    module.exports = factory(require('jquery'), require('./AlertNotification'), require('./ToastrNotification'), global || root);
   } else {
-    root.Smartajax = factory(root.jQuery, root.bootstrap, root.toastr, root);
+    root.Smartajax = factory(root.jQuery, root.bootstrap, root.toastr, root.alert, root);
   }
-}(typeof window !== 'undefined' ? window : this, function (jQuery, toastr, root) {
+}(typeof window !== 'undefined' ? window : this, function (jQuery, AlertNotification, ToastrNotification, root) {
 
   var _classCallCheck = function (instance, Constructor) {
     if (!(instance instanceof Constructor)) {
@@ -199,27 +199,36 @@
   };
 
   backgroundInit();
-  toastr.options = {
-  "closeButton": true,
-  "debug": true,
-  "newestOnTop": true,
-  "progressBar": true,
-  "positionClass": "toast-top-right",
-  "preventDuplicates": false,
-  "onclick": null,
-  "showDuration": "300",
-  "hideDuration": "1000",
-  "timeOut": "10000",
-  "extendedTimeOut": "1000",
-  "showEasing": "swing",
-  "hideEasing": "linear",
-  "showMethod": "fadeIn",
-  "hideMethod": "fadeOut"
-}
-  toastr.info('Are you the 6 fingered man?', 'Hello this is info message');
-    toastr.success('Are you the 6 fingered man?', 'Hello this is info message');
-      toastr.warning('Are you the 6 fingered man?', 'Hello this is info message');
-        toastr.error('Are you the 6 fingered man?', 'Hello this is info message');
+  ToastrNotification.setOptions({
+    closeButton: true,
+    progressBar: true,
+  });
+  ToastrNotification.success('Success', 'Succcccc');
+  ToastrNotification.error('Success', 'Succcccc');
+  ToastrNotification.info('Success', 'Succcccc');
+  ToastrNotification.warning('Success', 'Succcccc');
+//   alert.options = {
+//   "closeButton": true,
+//   "debug": true,
+//   "newestOnTop": true,
+//   "progressBar": true,
+//   "positionClass": "toast-top-right",
+//   "preventDuplicates": false,
+//   "onclick": null,
+//   "showDuration": "300",
+//   "hideDuration": "1000",
+//   "timeOut": "10000",
+//   "extendedTimeOut": "10000",
+//   "showEasing": "swing",
+//   "autoHide": false,
+//   "hideEasing": "linear",
+//   "showMethod": "fadeIn",
+//   "hideMethod": "fadeOut"
+// }
+//   alert.info('Are you the 6 fingered man?', 'Hello this is info message');
+//     alert.success('Are you the 6 fingered man?', 'Hello this is info message');
+//       alert.warning('Are you the 6 fingered man?', 'Hello this is info message');
+//         alert.error('Are you the 6 fingered man?', 'Hello this is info message');
   return Smartajax;
 
 }));
