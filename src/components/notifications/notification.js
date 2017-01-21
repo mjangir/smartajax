@@ -1,4 +1,4 @@
-var Utils = require('./utils');
+var utils = require('../../utils');
 
 module.exports = (function () {
 
@@ -65,7 +65,7 @@ module.exports = (function () {
             }
 
         if (typeof (map.optionsOverride) !== 'undefined') {
-            options         = Utils.extend(options, map.optionsOverride);
+            options         = utils.extend(options, map.optionsOverride);
             map.iconClass   = map.optionsOverride.iconClass || iconClass;
         }
         
@@ -108,7 +108,7 @@ module.exports = (function () {
                 return;
             }
 
-            return Utils.design.fadeOut(notificationElement, {
+            return utils.design.fadeOut(notificationElement, {
                 easing: easing,
                 duration: duration,
                 complete: function () {
@@ -127,7 +127,7 @@ module.exports = (function () {
         function displayNotification() {
             notificationElement.style.opacity = 0;
 
-            Utils.design.fadeIn(notificationElement, {
+            utils.design.fadeIn(notificationElement, {
                 easing:     options.showEasing,
                 duration:   options.showDuration,
                 complete:   options.onShown
@@ -202,7 +202,7 @@ module.exports = (function () {
             i;
         
         container.setAttribute('id', options.containerId);
-        Utils.addClass(container, options.containerClass);
+        utils.addClass(container, options.containerClass);
 
         if (options.target === 'body') {
             document.body.appendChild(container);
@@ -215,7 +215,7 @@ module.exports = (function () {
     
     function removeNotification(notificationElement) {
         
-        if (Utils.isElementVisible(notificationElement)) {
+        if (utils.isElementVisible(notificationElement)) {
             return;
         }
 
@@ -277,8 +277,8 @@ module.exports = (function () {
     };
 
     Notification.prototype.getOptions = function () {
-        var defaults = Utils.extend(globalOptions, this.getDefaults());
-        return Utils.extend(defaults, options);
+        var defaults = utils.extend(globalOptions, this.getDefaults());
+        return utils.extend(defaults, options);
     };
 
     Notification.prototype.getContainer = function (create) {

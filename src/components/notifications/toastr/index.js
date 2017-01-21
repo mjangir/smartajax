@@ -1,5 +1,6 @@
-var Utils = require('./utils');
-var Notification = require('./Notification');
+var utils               = require('../../../utils');
+var baseNotification    = require('../notification');
+var style               = require('./style.css');
 
 module.exports = (function () {
 
@@ -9,23 +10,23 @@ module.exports = (function () {
 
         var instance = null,
             defaultOptions = {
-                target:         'body',
-                containerId:    'toast-container',
-                containerClass: 'toast-top-right',
-                notificationClass:     'toast',
-                iconClass:      'toast-info',
-                positionClass:  'toast-top-right',
-                titleClass:     'toast-title',
-                messageClass:   'toast-message',
-                closeClass:     'toast-close-button',
-                progressBar:    true,
-                progressClass:  'toast-progress',
-                rightAlign:     false,
+                target:             'body',
+                containerId:        'sa-toast-container',
+                containerClass:     'sa-toast-top-right',
+                notificationClass:  'sa-toast',
+                iconClass:          'sa-toast-info',
+                positionClass:      'sa-toast-top-right',
+                titleClass:         'sa-toast-title',
+                messageClass:       'sa-toast-message',
+                closeClass:         'sa-toast-close-button',
+                progressBar:        true,
+                progressClass:      'sa-toast-progress',
+                rightAlign:         false,
                 iconClasses: {
-                    error:   'toast-error',
-                    info:    'toast-info',
-                    success: 'toast-success',
-                    warning: 'toast-warning'
+                    error:   'sa-toast-error',
+                    info:    'sa-toast-info',
+                    success: 'sa-toast-success',
+                    warning: 'sa-toast-warning'
                 }
             };
 
@@ -33,7 +34,7 @@ module.exports = (function () {
 
         }
 
-        ToastrNotification.prototype               = Object.create(Notification.prototype);
+        ToastrNotification.prototype               = Object.create(baseNotification.prototype);
         
         ToastrNotification.prototype.constructor   = ToastrNotification;
         
@@ -47,15 +48,15 @@ module.exports = (function () {
                 titleElement    = document.createElement('div'),
                 messageElement  = document.createElement('div'),
                 progressElement = document.createElement('div'),
-                closeElement    = Utils.stringToHtmlElement('<button type="button">&times;</button>'),
+                closeElement    = utils.stringToHtmlElement('<button type="button">&times;</button>'),
                 options         = this.getOptions(),
                 title           = map.title || false,
                 message         = map.message || false,
                 iconClass       = map.iconClass || false;
             
             if (iconClass) {
-                Utils.addClass(toastElement, options.notificationClass);
-                Utils.addClass(toastElement, map.iconClass);
+                utils.addClass(toastElement, options.notificationClass);
+                utils.addClass(toastElement, map.iconClass);
             }
             
             if (options.newestOnTop) {
@@ -66,35 +67,35 @@ module.exports = (function () {
             
             if (title) {
                 if (options.escapeHtml) {
-                    title = Utils.escapeHtml(title);
+                    title = utils.escapeHtml(title);
                 }
-                Utils.addClass(titleElement, options.titleClass);
+                utils.addClass(titleElement, options.titleClass);
                 titleElement.insertAdjacentHTML('beforeend', title);
                 toastElement.appendChild(titleElement);
             }
             
             if (message) {
                 if (options.escapeHtml) {
-                    message = Utils.escapeHtml(message);
+                    message = utils.escapeHtml(message);
                 }
-                Utils.addClass(messageElement, options.messageClass);
+                utils.addClass(messageElement, options.messageClass);
                 messageElement.insertAdjacentHTML('beforeend', message);
                 toastElement.appendChild(messageElement);
             }
             
             if (options.closeButton) {
-                Utils.addClass(closeElement, options.closeClass);
+                utils.addClass(closeElement, options.closeClass);
                 closeElement.setAttribute('role', 'button');
                 toastElement.insertBefore(closeElement, toastElement.firstChild);
             }
             
             if (options.progressBar) {
-                Utils.addClass(progressElement, options.progressClass);
+                utils.addClass(progressElement, options.progressClass);
                 toastElement.insertBefore(progressElement, toastElement.firstChild);
             }
             
             if (options.rightAlign) {
-                Utils.addClass(toastElement, 'rtl');
+                utils.addClass(toastElement, 'rtl');
             }
             
             return {

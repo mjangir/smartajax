@@ -1,5 +1,6 @@
-var Utils = require('./utils');
-var Notification = require('./Notification');
+var utils               = require('../../../utils');
+var baseNotification    = require('../notification');
+var style               = require('./style.css');
 
 module.exports = (function () {
 
@@ -29,7 +30,7 @@ module.exports = (function () {
 	        
 	    }
 
-	    AlertNotification.prototype                = Object.create(Notification.prototype);
+	    AlertNotification.prototype                = Object.create(baseNotification.prototype);
         
 	    AlertNotification.prototype.constructor    = AlertNotification;
 
@@ -41,36 +42,36 @@ module.exports = (function () {
             var alertElement    = document.createElement('div'),
                 titleElement    = document.createElement('strong'),
                 messageElement  = document.createElement('span'),
-                closeElement    = Utils.stringToHtmlElement('<a href="javascript:void(0);" title="close">&times;</a>'),
+                closeElement    = utils.stringToHtmlElement('<a href="javascript:void(0);" title="close">&times;</a>'),
                 options         = this.getOptions(),
                 title           = map.title || false,
                 message         = map.message || false;
 
             if (map.iconClass) {
-                Utils.addClass(alertElement, options.notificationClass);
-                Utils.addClass(alertElement, map.iconClass);
+                utils.addClass(alertElement, options.notificationClass);
+                utils.addClass(alertElement, map.iconClass);
             }
             
             if (title) {
                 if (options.escapeHtml) {
-                    title = Utils.escapeHtml(title);
+                    title = utils.escapeHtml(title);
                 }
-                Utils.addClass(titleElement, options.titleClass);
+                utils.addClass(titleElement, options.titleClass);
                 titleElement.insertAdjacentHTML('beforeend', title);
                 alertElement.appendChild(titleElement);
             }
             
             if (message) {
                 if (options.escapeHtml) {
-                    message = Utils.escapeHtml(message);
+                    message = utils.escapeHtml(message);
                 }
-                Utils.addClass(messageElement, options.messageClass);
+                utils.addClass(messageElement, options.messageClass);
                 messageElement.insertAdjacentHTML('beforeend', message);
                 alertElement.appendChild(messageElement);
             }
             
             if (options.closeButton) {
-                Utils.addClass(closeElement, options.closeClass);
+                utils.addClass(closeElement, options.closeClass);
                 alertElement.insertBefore(closeElement, alertElement.firstChild);
             }
             

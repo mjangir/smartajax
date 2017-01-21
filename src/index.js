@@ -1,10 +1,10 @@
 (function (root, factory) {
   if (typeof exports === 'object' && typeof module !== 'undefined') {
-    module.exports = factory(require('jquery'), require('./AlertNotification'), require('./ToastrNotification'), global || root);
+    module.exports = factory(require('jquery'), require('./components/notifications/alert'), require('./components/notifications/toastr'), require('index.css'), global || root);
   } else {
     root.Smartajax = factory(root.jQuery, root.bootstrap, root.toastr, root.alert, root);
   }
-}(typeof window !== 'undefined' ? window : this, function (jQuery, AlertNotification, ToastrNotification, root) {
+}(typeof window !== 'undefined' ? window : this, function (jQuery, AlertNotification, ToastrNotification, styles, root) {
 
   var _classCallCheck = function (instance, Constructor) {
     if (!(instance instanceof Constructor)) {
@@ -199,18 +199,18 @@
   };
 
   backgroundInit();
-  AlertNotification.setOptions({
+  ToastrNotification.setOptions({
     closeButton: true,
     progressBar: true,
     preventDuplicates: false,
-      autoHide:false,
+      autoHide:true,
       closeOnHover: false
   });
-  AlertNotification.success('Success', 'Department added successfully');
-  AlertNotification.error('Oops', 'There went something wrong');
-  AlertNotification.info('Information', 'This is important information');
-  AlertNotification.warning('Warning', 'You cannot delete system defined users');
-  AlertNotification.warning('Warning', 'You cannot delete system defined users');
+  ToastrNotification.success('Success', 'Department added successfully');
+  ToastrNotification.error('Oops', 'There went something wrong');
+  ToastrNotification.info('Information', 'This is important information');
+  ToastrNotification.warning('Warning', 'You cannot delete system defined users');
+  ToastrNotification.warning('Warning', 'You cannot delete system defined users');
 //   alert.options = {
 //   "closeButton": true,
 //   "debug": true,

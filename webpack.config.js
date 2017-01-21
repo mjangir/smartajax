@@ -1,4 +1,5 @@
 var webpack = require('webpack');
+var ExtractTextPlugin = require("extract-text-webpack-plugin");
 var UglifyJsPlugin = webpack.optimize.UglifyJsPlugin;
 var path = require('path');
 var env = require('yargs').argv.mode;
@@ -6,7 +7,9 @@ var env = require('yargs').argv.mode;
 var libraryName = 'Smartajax';
 var outputFileName = 'smartajax';
 
-var plugins = [], outputFile;
+var plugins = [
+    new ExtractTextPlugin("smartajax.min.css", {allChunks: false})
+], outputFile;
 
 if (env === 'build') {
   plugins.push(new UglifyJsPlugin({ minimize: true }));
@@ -36,6 +39,11 @@ var config = {
         loader: 'babel',
         exclude: /(node_modules|bower_components)/
       },
+        { 
+            test: /\.css$/, 
+            loader: "style-loader!css-loader",
+            loader: ExtractTextPlugin.extract("style-loader", "css-loader")
+        },
       // {
       //   test: /(\.jsx|\.js)$/,
       //   loader: "eslint-loader",
