@@ -3,111 +3,100 @@ var Notification = require('./Notification');
 
 module.exports = (function () {
 
-	var BootstrapAlert = (function(){
+    'use strict';
+    
+	var AlertClass = (function () {
 
-		var defaultOptions = {
-            containerClass: 'alert',
-            tapToDismiss: true,
-            alertClass: 'alert',
-            containerId: 'sa-alert-container',
-            debug: false,
+        var instance = null,
+            defaultOptions = {
+                target:         'body',
+                containerId:    'sa-alert-container',
+                containerClass: 'alert',
+                notificationClass: 'alert',
+                titleClass:     '',
+                messageClass:   '',
+                closeClass:     'close',
+                rightAlign:     false,
+                iconClasses: {
+                    error:   'alert-danger',
+                    info:    'alert-info',
+                    success: 'alert-success',
+                    warning: 'alert-warning'
+                }
+            };
 
-            showMethod: 'fadeIn', //fadeIn, slideDown, and show are built into jQuery
-            showDuration: 1000,
-            showEasing: 'linear', //swing and linear are built into jQuery
-            onShown: undefined,
-            hideMethod: 'fadeOut',
-            hideDuration: 1000,
-            hideEasing: 'swing',
-            autoHide: false,
-            hideTimeout: 5000,
-            onHidden: undefined,
-            closeMethod: false,
-            closeDuration: false,
-            closeEasing: false,
-
-            extendedTimeOut: 1000,
-            iconClasses: {
-                error: 'alert-danger',
-                info: 'alert-info',
-                success: 'alert-success',
-                warning: 'alert-warning'
-            },
-            iconClass: 'alert-info',
-            timeOut: 5000, // Set timeOut and extendedTimeOut to 0 to make it sticky
-            escapeHtml: false,
-            target: 'body',
-            newestOnTop: true,
-            preventDuplicates: false
-        };
-
-	    function BootstrapAlert() {
+	    function AlertNotification() {
 	        
 	    }
 
-	    BootstrapAlert.prototype = Object.create(Notification.prototype);
-	    BootstrapAlert.prototype.constructor = BootstrapAlert;
+	    AlertNotification.prototype                = Object.create(Notification.prototype);
+        
+	    AlertNotification.prototype.constructor    = AlertNotification;
 
-	    BootstrapAlert.prototype.getDefaults = function() {
-	    	return defaultOptions;
-	    }
+	    AlertNotification.prototype.getDefaults    = function () {
+            return defaultOptions;
+	    };
 
-	    BootstrapAlert.prototype.personalizeNotification = function(map, $container) {
-	    	var $notificationElement 	= document.createElement('div');
-		    var $titleElement 	= document.createElement('strong');
-		    var $messageElement = document.createElement('span');
-		    var $closeElement 	= Utils.stringToHtmlElement('<a href="javascript:void(0);" class="close" title="close">&times;</a>');
+	    AlertNotification.prototype.personalize    = function (map, container) {
+            var alertElement    = document.createElement('div'),
+                titleElement    = document.createElement('strong'),
+                messageElement  = document.createElement('span'),
+                closeElement    = Utils.stringToHtmlElement('<a href="javascript:void(0);" title="close">&times;</a>'),
+                options         = this.getOptions(),
+                title           = map.title || false,
+                message         = map.message || false;
 
-	    	var options = this.getOptions();
-	    	if (map.iconClass) {
-                $notificationElement.classList.add(options.alertClass);
-                $notificationElement.classList.add(map.iconClass);
+            if (map.iconClass) {
+                Utils.addClass(alertElement, options.notificationClass);
+                Utils.addClass(alertElement, map.iconClass);
             }
-            if (map.title) {
-                var suffix = map.title;
+            
+            if (title) {
                 if (options.escapeHtml) {
-                    suffix = escapeHtml(map.title);
+                    title = Utils.escapeHtml(title);
                 }
-                $titleElement.insertAdjacentHTML('beforeend', suffix);
-                $notificationElement.appendChild($titleElement);
+                Utils.addClass(titleElement, options.titleClass);
+                titleElement.insertAdjacentHTML('beforeend', title);
+                alertElement.appendChild(titleElement);
             }
-            if (map.message) {
-                var suffix = map.message;
+            
+            if (message) {
                 if (options.escapeHtml) {
-                    suffix = escapeHtml(map.message);
+                    message = Utils.escapeHtml(message);
                 }
-                $messageElement.insertAdjacentHTML('beforeend', suffix);
-                $notificationElement.appendChild($messageElement);
+                Utils.addClass(messageElement, options.messageClass);
+                messageElement.insertAdjacentHTML('beforeend', message);
+                alertElement.appendChild(messageElement);
             }
+            
             if (options.closeButton) {
-                $notificationElement.insertBefore($closeElement, $notificationElement.firstChild);
+                Utils.addClass(closeElement, options.closeClass);
+                alertElement.insertBefore(closeElement, alertElement.firstChild);
             }
+            
             if (options.newestOnTop) {
-	            $container.insertBefore($notificationElement, $container.firstChild);
+	            container.insertBefore(alertElement, container.firstChild);
 	        } else {
-	            $container.appendChild($notificationElement);
+	            container.appendChild(alertElement);
 	        }
+            
             return {
-                notificationElement: $notificationElement,
-                closeElement: $closeElement
+                notificationElement: alertElement,
+                closeElement: closeElement
             };
-	    }
-
-
-
-	    var instance;
+	    };
 
 	    return {
-	        getInstance: function() {
-	            if (instance == null) {
-	                instance = new BootstrapAlert();
+	        getInstance: function () {
+	            if (instance === null) {
+	                instance = new AlertNotification();
 	                instance.constructor = null;
 	            }
 	            return instance;
 	        }
-	   };
-	})();
+        };
+	}());
 
-	return BootstrapAlert.getInstance();
+	return AlertClass.getInstance();
 
-})();
+}());

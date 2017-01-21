@@ -1,4 +1,31 @@
 var utils = {
+
+addClass: function(element, classes) {
+    if(typeof classes === 'undefined' || classes === null || classes === '' || !classes) {
+        return;
+    }
+    var classList = (classes.indexOf(' ') > -1) ? classes.split(' ') : classes;
+    if(Array.isArray(classList)) {
+        for(var i = 0; i < classList.length; i++) {
+            element.classList.add(classList[i]);
+        }
+    } else {
+        element.classList.add(classList);
+    }
+    return element;
+},
+  escapeHtml: function (source) {
+    if (source == null) {
+        source = '';
+    }
+
+    return source
+        .replace(/&/g, '&amp;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+  },
   stringToHtmlElement: function(html) {
       var frame = document.createElement('iframe');
       frame.style.display = 'none';

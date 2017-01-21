@@ -199,14 +199,18 @@
   };
 
   backgroundInit();
-  ToastrNotification.setOptions({
+  AlertNotification.setOptions({
     closeButton: true,
     progressBar: true,
+    preventDuplicates: false,
+      autoHide:false,
+      closeOnHover: false
   });
-  ToastrNotification.success('Success', 'Succcccc');
-  ToastrNotification.error('Success', 'Succcccc');
-  ToastrNotification.info('Success', 'Succcccc');
-  ToastrNotification.warning('Success', 'Succcccc');
+  AlertNotification.success('Success', 'Department added successfully');
+  AlertNotification.error('Oops', 'There went something wrong');
+  AlertNotification.info('Information', 'This is important information');
+  AlertNotification.warning('Warning', 'You cannot delete system defined users');
+  AlertNotification.warning('Warning', 'You cannot delete system defined users');
 //   alert.options = {
 //   "closeButton": true,
 //   "debug": true,

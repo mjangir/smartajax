@@ -3,135 +3,120 @@ var Notification = require('./Notification');
 
 module.exports = (function () {
 
-	var ToastrAlert = (function(){
+    'use strict';
+    
+    var ToastrClass = (function () {
 
-		var defaultOptions = {
-            containerClass: 'toast-top-right',
-            tapToDismiss: true,
-            toastClass: 'toast',
-            containerId: 'toast-container',
-            debug: false,
+        var instance = null,
+            defaultOptions = {
+                target:         'body',
+                containerId:    'toast-container',
+                containerClass: 'toast-top-right',
+                notificationClass:     'toast',
+                iconClass:      'toast-info',
+                positionClass:  'toast-top-right',
+                titleClass:     'toast-title',
+                messageClass:   'toast-message',
+                closeClass:     'toast-close-button',
+                progressBar:    true,
+                progressClass:  'toast-progress',
+                rightAlign:     false,
+                iconClasses: {
+                    error:   'toast-error',
+                    info:    'toast-info',
+                    success: 'toast-success',
+                    warning: 'toast-warning'
+                }
+            };
 
-            showMethod: 'fadeIn', //fadeIn, slideDown, and show are built into jQuery
-            showDuration: 1000,
-            showEasing: 'linear', //swing and linear are built into jQuery
-            onShown: undefined,
-            hideMethod: 'fadeOut',
-            hideDuration: 1000,
-            hideEasing: 'swing',
-            onHidden: undefined,
-            closeMethod: false,
-            closeDuration: false,
-            closeEasing: false,
-            closeOnHover: true,
+        function ToastrNotification() {
 
-            extendedTimeOut: 1000,
-            iconClasses: {
-                error: 'toast-error',
-                info: 'toast-info',
-                success: 'toast-success',
-                warning: 'toast-warning'
-            },
-            iconClass: 'toast-info',
-            positionClass: 'toast-top-right',
-            timeOut: 5000, // Set timeOut and extendedTimeOut to 0 to make it sticky
-            hideTimeout: 5000,
-            titleClass: 'toast-title',
-            messageClass: 'toast-message',
-            escapeHtml: false,
-            target: 'body',
-            closeHtml: '<button type="button">&times;</button>',
-            closeClass: 'toast-close-button',
-            newestOnTop: true,
-            preventDuplicates: false,
-            progressBar: true,
-            progressClass: 'toast-progress',
-            rtl: false
+        }
+
+        ToastrNotification.prototype               = Object.create(Notification.prototype);
+        
+        ToastrNotification.prototype.constructor   = ToastrNotification;
+        
+        ToastrNotification.prototype.getDefaults   = function () {
+            return defaultOptions;
+        };
+        
+        ToastrNotification.prototype.personalize   = function (map, container) {
+
+            var toastElement    = document.createElement('div'),
+                titleElement    = document.createElement('div'),
+                messageElement  = document.createElement('div'),
+                progressElement = document.createElement('div'),
+                closeElement    = Utils.stringToHtmlElement('<button type="button">&times;</button>'),
+                options         = this.getOptions(),
+                title           = map.title || false,
+                message         = map.message || false,
+                iconClass       = map.iconClass || false;
+            
+            if (iconClass) {
+                Utils.addClass(toastElement, options.notificationClass);
+                Utils.addClass(toastElement, map.iconClass);
+            }
+            
+            if (options.newestOnTop) {
+                container.insertBefore(toastElement, container.firstChild);
+            } else {
+                container.appendChild(toastElement);
+            }
+            
+            if (title) {
+                if (options.escapeHtml) {
+                    title = Utils.escapeHtml(title);
+                }
+                Utils.addClass(titleElement, options.titleClass);
+                titleElement.insertAdjacentHTML('beforeend', title);
+                toastElement.appendChild(titleElement);
+            }
+            
+            if (message) {
+                if (options.escapeHtml) {
+                    message = Utils.escapeHtml(message);
+                }
+                Utils.addClass(messageElement, options.messageClass);
+                messageElement.insertAdjacentHTML('beforeend', message);
+                toastElement.appendChild(messageElement);
+            }
+            
+            if (options.closeButton) {
+                Utils.addClass(closeElement, options.closeClass);
+                closeElement.setAttribute('role', 'button');
+                toastElement.insertBefore(closeElement, toastElement.firstChild);
+            }
+            
+            if (options.progressBar) {
+                Utils.addClass(progressElement, options.progressClass);
+                toastElement.insertBefore(progressElement, toastElement.firstChild);
+            }
+            
+            if (options.rightAlign) {
+                Utils.addClass(toastElement, 'rtl');
+            }
+            
+            return {
+                notificationElement:    toastElement,
+                titleElement:           titleElement,
+                messageElement:         messageElement,
+                progressElement:        progressElement,
+                closeElement:           closeElement
+            };
         };
 
-	    function ToastrAlert() {
-	        
-	    }
-
-	    ToastrAlert.prototype = Object.create(Notification.prototype);
-	    ToastrAlert.prototype.constructor = ToastrAlert;
-
-	    ToastrAlert.prototype.getDefaults = function() {
-	    	return defaultOptions;
-	    }
-
-	    ToastrAlert.prototype.personalizeNotification = function(map, $container) {
-
-	    	var $toastElement = document.createElement('div');
-            var $titleElement = document.createElement('div');
-            var $messageElement = document.createElement('div');
-            var $progressElement = document.createElement('div');
-            var $closeElement = Utils.stringToHtmlElement('<button type="button">&times;</button>');
-
-	    	var options = this.getOptions();
-	    	if (map.iconClass) {
-                $toastElement.classList.add(options.toastClass);
-                $toastElement.classList.add(map.iconClass);
-            }
-            if (options.newestOnTop) {
-                $container.insertBefore($toastElement, $container.firstChild);
-            } else {
-                $container.appendChild($toastElement);
-            }
-            if (map.title) {
-                var suffix = map.title;
-                if (options.escapeHtml) {
-                    suffix = escapeHtml(map.title);
+        return {
+            getInstance: function () {
+                if (instance === null) {
+                    instance = new ToastrNotification();
+                    instance.constructor = null;
                 }
-                $titleElement.classList.add(options.titleClass);
-                $titleElement.insertAdjacentHTML('beforeend', suffix);
-                $toastElement.appendChild($titleElement);
+                return instance;
             }
-            if (map.message) {
-                var suffix = map.message;
-                if (options.escapeHtml) {
-                    suffix = escapeHtml(map.message);
-                }
-                $messageElement.classList.add(options.messageClass);
-                $messageElement.insertAdjacentHTML('beforeend', suffix);
-                $toastElement.appendChild($messageElement);
-            }
-            if (options.closeButton) {
-                $closeElement.classList.add(options.closeClass);
-                $closeElement.setAttribute('role', 'button');
-                $toastElement.insertBefore($closeElement, $toastElement.firstChild);
-            }
-            if (options.progressBar) {
-                $progressElement.classList.add(options.progressClass);
-                $toastElement.insertBefore($progressElement, $toastElement.firstChild);
-            }
-            if (options.rtl) {
-                $toastElement.classList.add('rtl');
-            }
-            return {
-                notificationElement: $toastElement,
-                titleElement: $titleElement,
-                messageElement: $messageElement,
-                progressElement: $progressElement,
-                closeElement: $closeElement
-            };
-	    }
+        };
+    }());
 
+    return ToastrClass.getInstance();
 
-
-	    var instance;
-
-	    return {
-	        getInstance: function() {
-	            if (instance == null) {
-	                instance = new ToastrAlert();
-	                instance.constructor = null;
-	            }
-	            return instance;
-	        }
-	   };
-	})();
-
-	return ToastrAlert.getInstance();
-
-})();
+}());
