@@ -43,6 +43,12 @@ module.exports = (function () {
             preventDuplicates:  true
         };
 
+    /**
+     * Notify browser
+     * 
+     * @param   {object}  map
+     * @returns {boolean}
+     */
     function notify(map) {
         var domElements,
             notificationElement,
@@ -69,13 +75,25 @@ module.exports = (function () {
             map.iconClass   = map.optionsOverride.iconClass || iconClass;
         }
         
+        /**
+         * Initialize notification element
+         * 
+         * @param   {object}   me
+         * @returns {object}
+         */
         function initiateNotify(me) {
             notificationId  = notificationId + 1;
             container       = me.getContainer(true);
             return me.personalize(map, container);
         }
 
-        
+        /**
+         * Check for duplicate notification
+         * 
+         * @param   {object}  options
+         * @param   {object}  map
+         * @returns {boolean}
+         */
         function shouldExit(options, map) {
             if (options.preventDuplicates) {
                 if (map.message === previousNotification) {
@@ -87,6 +105,11 @@ module.exports = (function () {
             return false;
         }
         
+        /**
+         * Emits subscribed events
+         * 
+         * @param {mixed} args
+         */
         function publish(args) {
             if (!listener) {
                 return;
@@ -94,11 +117,20 @@ module.exports = (function () {
             listener(args);
         }
         
+        /**
+         * Update progress bar in toastr notification
+         */
         function updateProgress() {
             var percentage = ((progressBar.hideEta - (new Date().getTime())) / progressBar.maxHideTime) * 100;
             progressElement.style.width = percentage + '%';
         }
         
+        /**
+         * Hide notification
+         * 
+         * @param   {boolean} override
+         * @returns {object} 
+         */
         function hideNotification(override) {
             var method      = override && options.closeMethod !== false ? options.closeMethod : options.hideMethod,
                 duration    = override && options.closeDuration !== false ? options.closeDuration : options.hideDuration,
@@ -124,6 +156,9 @@ module.exports = (function () {
             });
         }
         
+        /**
+         * Display actual notification
+         */
         function displayNotification() {
             notificationElement.style.opacity = 0;
 
@@ -148,6 +183,9 @@ module.exports = (function () {
             }
         }
         
+        /**
+         * Handle notification events
+         */
         function handleEvents() {
             if (options.closeOnHover) {
                 notificationElement.addEventListener('mouseover', hideNotification, false);
@@ -196,7 +234,12 @@ module.exports = (function () {
         return notificationElement;
     }
 
-
+    /**
+     * Create notification container
+     * 
+     * @param   {object}   options
+     * @returns {Element}
+     */
     function createContainer(options) {
         var container  = document.createElement('div'),
             i;
@@ -213,6 +256,11 @@ module.exports = (function () {
         return container;
     }
     
+    /**
+     * Remove notification
+     * 
+     * @param {Element} notificationElement
+     */
     function removeNotification(notificationElement) {
         
         if (utils.isElementVisible(notificationElement)) {
@@ -228,10 +276,21 @@ module.exports = (function () {
         }
     }
 
+    /**
+     * Constructor function
+     */
     Notification = function () {
     
     };
 
+    /**
+     * Initiate error notification
+     * 
+     * @param   {string}   title
+     * @param   {string}   message
+     * @param   {object}   optionsOverride
+     * @returns {*}
+     */
     Notification.prototype.error = function (title, message, optionsOverride) {
         return notify.call(this, {
             type:               notificationType.error,
@@ -242,6 +301,14 @@ module.exports = (function () {
         });
     };
 
+    /**
+     * Initiate success notification
+     * 
+     * @param   {string}   title
+     * @param   {string}   message
+     * @param   {object}   optionsOverride
+     * @returns {*}
+     */
     Notification.prototype.success = function (title, message, optionsOverride) {
         return notify.call(this, {
             type:               notificationType.success,
@@ -252,6 +319,14 @@ module.exports = (function () {
         });
     };
 
+    /**
+     * Initiate warning notification
+     * 
+     * @param   {string}   title
+     * @param   {string}   message
+     * @param   {object}   optionsOverride
+     * @returns {*}
+     */
     Notification.prototype.warning = function (title, message, optionsOverride) {
         return notify.call(this, {
             type:               notificationType.warning,
@@ -262,6 +337,14 @@ module.exports = (function () {
         });
     };
 
+    /**
+     * Initiate info notification
+     * 
+     * @param   {string}   title
+     * @param   {string}   message
+     * @param   {object}   optionsOverride
+     * @returns {*}
+     */
     Notification.prototype.info = function (title, message, optionsOverride) {
         return notify.call(this, {
             type:               notificationType.info,
@@ -272,15 +355,31 @@ module.exports = (function () {
         });
     };
 
+    /**
+     * Set notification user defined options
+     * 
+     * @param {object} opt
+     */
     Notification.prototype.setOptions = function (opt) {
         options = opt;
     };
 
+    /**
+     * Get options
+     * 
+     * @returns {object}
+     */
     Notification.prototype.getOptions = function () {
         var defaults = utils.extend(globalOptions, this.getDefaults());
         return utils.extend(defaults, options);
     };
 
+    /**
+     * Get container
+     * 
+     * @param   {boolean}  create
+     * @returns {Element}
+     */
     Notification.prototype.getContainer = function (create) {
         var options = this.getOptions();
         container  = document.getElementById(options.containerId);
@@ -293,6 +392,11 @@ module.exports = (function () {
         return container;
     };
 
+    /**
+     * Remove notification
+     * 
+     * @param {Element} notificationElement
+     */
     Notification.prototype.remove = function (notificationElement) {
         var options = this.getOptions();
         if (!container) {
@@ -307,6 +411,12 @@ module.exports = (function () {
         }
     };
 
+    /**
+     * Subscribe event listener
+     * 
+     * @param   {function} callback
+     * @returns {Notification}
+     */
     Notification.prototype.subscribe = function (callback) {
         listener = callback;
         return Notification;

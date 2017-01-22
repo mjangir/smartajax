@@ -26,6 +26,9 @@ module.exports = (function () {
                 }
             };
 
+	    /**
+	     * Constructor function
+	     */
 	    function AlertNotification() {
 	        
 	    }
@@ -34,10 +37,22 @@ module.exports = (function () {
         
 	    AlertNotification.prototype.constructor    = AlertNotification;
 
+	    /**
+	     * Get default options
+	     * 
+	     * @returns {object} Default options
+	     */
 	    AlertNotification.prototype.getDefaults    = function () {
             return defaultOptions;
 	    };
 
+	    /**
+	     * Create notification element
+	     * 
+	     * @param   {object} map       
+	     * @param   {object} container 
+	     * @returns {object} 
+	     */
 	    AlertNotification.prototype.personalize    = function (map, container) {
             var alertElement    = document.createElement('div'),
                 titleElement    = document.createElement('strong'),

@@ -30,6 +30,9 @@ module.exports = (function () {
                 }
             };
 
+        /**
+         * Constructor function
+         */
         function ToastrNotification() {
 
         }
@@ -38,10 +41,22 @@ module.exports = (function () {
         
         ToastrNotification.prototype.constructor   = ToastrNotification;
         
+        /**
+         * Get default options
+         * 
+         * @returns {object} Get default options
+         */
         ToastrNotification.prototype.getDefaults   = function () {
             return defaultOptions;
         };
         
+        /**
+         * Create notification element
+         * 
+         * @param   {object} map       
+         * @param   {object} container 
+         * @returns {object} 
+         */
         ToastrNotification.prototype.personalize   = function (map, container) {
 
             var toastElement    = document.createElement('div'),
