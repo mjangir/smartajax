@@ -1,10 +1,16 @@
 (function (root, factory) {
   if (typeof exports === 'object' && typeof module !== 'undefined') {
-    module.exports = factory(require('jquery'), require('./components/notifications/alert'), require('./components/notifications/toastr'), require('index.css'), global || root);
+    module.exports = factory(
+      require('jquery'),
+      require('./components/notifications/alert'),
+      require('./components/notifications/toastr'),
+      require('index.css'),
+      require('./components/loader'),
+      global || root);
   } else {
     root.Smartajax = factory(root.jQuery, root.bootstrap, root.toastr, root.alert, root);
   }
-}(typeof window !== 'undefined' ? window : this, function (jQuery, AlertNotification, ToastrNotification, styles, root) {
+}(typeof window !== 'undefined' ? window : this, function (jQuery, AlertNotification, ToastrNotification, styles, Loader, root) {
 
   var _classCallCheck = function (instance, Constructor) {
     if (!(instance instanceof Constructor)) {
@@ -233,6 +239,10 @@
 //     alert.success('Are you the 6 fingered man?', 'Hello this is info message');
 //       alert.warning('Are you the 6 fingered man?', 'Hello this is info message');
 //         alert.error('Are you the 6 fingered man?', 'Hello this is info message');
+Loader.show(document.getElementById('overlaydiv'));
+setTimeout(function() {
+Loader.hide('#overlaydiv');
+}, 5000);
   return Smartajax;
 
 }));

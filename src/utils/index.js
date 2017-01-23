@@ -1,5 +1,10 @@
 var utils = {
-
+getOffsetRelativeToDocument: function(element) {
+    var rect        = element.getBoundingClientRect(),
+        scrollLeft  = window.pageXOffset || document.documentElement.scrollLeft,
+        scrollTop   = window.pageYOffset || document.documentElement.scrollTop;
+    return { top: rect.top + scrollTop, left: rect.left + scrollLeft }
+},
 addClass: function(element, classes) {
     if(typeof classes === 'undefined' || classes === null || classes === '' || !classes) {
         return;
