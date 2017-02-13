@@ -3,7 +3,7 @@ var utils = require('../../utils');
 module.exports = (function () {
 
     'use strict';
-    
+
     var Notification,
         container,
         listener,
@@ -19,7 +19,7 @@ module.exports = (function () {
         globalOptions = {
             tapToDismiss:   true,
             debug:          false,
-            
+
             showMethod:     'fadeIn',
             showDuration:   1000,
             showEasing:     'swing',
@@ -45,7 +45,7 @@ module.exports = (function () {
 
     /**
      * Notify browser
-     * 
+     *
      * @param   {object}  map
      * @returns {boolean}
      */
@@ -74,10 +74,10 @@ module.exports = (function () {
             options         = utils.extend(options, map.optionsOverride);
             map.iconClass   = map.optionsOverride.iconClass || iconClass;
         }
-        
+
         /**
          * Initialize notification element
-         * 
+         *
          * @param   {object}   me
          * @returns {object}
          */
@@ -89,7 +89,7 @@ module.exports = (function () {
 
         /**
          * Check for duplicate notification
-         * 
+         *
          * @param   {object}  options
          * @param   {object}  map
          * @returns {boolean}
@@ -104,10 +104,10 @@ module.exports = (function () {
             }
             return false;
         }
-        
+
         /**
          * Emits subscribed events
-         * 
+         *
          * @param {mixed} args
          */
         function publish(args) {
@@ -116,7 +116,7 @@ module.exports = (function () {
             }
             listener(args);
         }
-        
+
         /**
          * Update progress bar in toastr notification
          */
@@ -124,18 +124,18 @@ module.exports = (function () {
             var percentage = ((progressBar.hideEta - (new Date().getTime())) / progressBar.maxHideTime) * 100;
             progressElement.style.width = percentage + '%';
         }
-        
+
         /**
          * Hide notification
-         * 
+         *
          * @param   {boolean} override
-         * @returns {object} 
+         * @returns {object}
          */
         function hideNotification(override) {
             var method      = override && options.closeMethod !== false ? options.closeMethod : options.hideMethod,
                 duration    = override && options.closeDuration !== false ? options.closeDuration : options.hideDuration,
                 easing      = override && options.closeEasing !== false ? options.closeEasing : options.hideEasing;
-            
+
             if (notificationElement.length && !override) {
                 return;
             }
@@ -155,7 +155,7 @@ module.exports = (function () {
                 }
             });
         }
-        
+
         /**
          * Display actual notification
          */
@@ -171,7 +171,7 @@ module.exports = (function () {
             if (options.autoHide && options.hideTimeout > 0) {
                 intervalId = setTimeout(hideNotification, options.hideTimeout);
             }
-            
+
             if (options.hideTimeout > 0) {
                 if (typeof progressElement !== 'undefined' && options.autoHide !== false) {
                     progressBar.maxHideTime = parseFloat(options.hideTimeout);
@@ -182,7 +182,7 @@ module.exports = (function () {
                 }
             }
         }
-        
+
         /**
          * Handle notification events
          */
@@ -211,7 +211,7 @@ module.exports = (function () {
                 };
             }
         }
-            
+
         if (shouldExit(options, map)) {
             return;
         }
@@ -220,7 +220,7 @@ module.exports = (function () {
         notificationElement = domElements.notificationElement;
         closeElement        = domElements.closeElement;
         progressElement     = domElements.progressElement || undefined;
-        
+
         displayNotification();
 
         handleEvents();
@@ -236,14 +236,14 @@ module.exports = (function () {
 
     /**
      * Create notification container
-     * 
+     *
      * @param   {object}   options
      * @returns {Element}
      */
     function createContainer(options) {
         var container  = document.createElement('div'),
             i;
-        
+
         container.setAttribute('id', options.containerId);
         utils.addClass(container, options.containerClass);
 
@@ -252,17 +252,17 @@ module.exports = (function () {
         } else {
             document.querySelector(options.target).appendChild(container);
         }
-        
+
         return container;
     }
-    
+
     /**
      * Remove notification
-     * 
+     *
      * @param {Element} notificationElement
      */
     function removeNotification(notificationElement) {
-        
+
         if (utils.isElementVisible(notificationElement)) {
             return;
         }
@@ -280,12 +280,12 @@ module.exports = (function () {
      * Constructor function
      */
     Notification = function () {
-    
+
     };
 
     /**
      * Initiate error notification
-     * 
+     *
      * @param   {string}   title
      * @param   {string}   message
      * @param   {object}   optionsOverride
@@ -303,7 +303,7 @@ module.exports = (function () {
 
     /**
      * Initiate success notification
-     * 
+     *
      * @param   {string}   title
      * @param   {string}   message
      * @param   {object}   optionsOverride
@@ -321,7 +321,7 @@ module.exports = (function () {
 
     /**
      * Initiate warning notification
-     * 
+     *
      * @param   {string}   title
      * @param   {string}   message
      * @param   {object}   optionsOverride
@@ -339,7 +339,7 @@ module.exports = (function () {
 
     /**
      * Initiate info notification
-     * 
+     *
      * @param   {string}   title
      * @param   {string}   message
      * @param   {object}   optionsOverride
@@ -357,16 +357,17 @@ module.exports = (function () {
 
     /**
      * Set notification user defined options
-     * 
+     *
      * @param {object} opt
      */
     Notification.prototype.setOptions = function (opt) {
         options = opt;
+        return this;
     };
 
     /**
      * Get options
-     * 
+     *
      * @returns {object}
      */
     Notification.prototype.getOptions = function () {
@@ -376,7 +377,7 @@ module.exports = (function () {
 
     /**
      * Get container
-     * 
+     *
      * @param   {boolean}  create
      * @returns {Element}
      */
@@ -394,7 +395,7 @@ module.exports = (function () {
 
     /**
      * Remove notification
-     * 
+     *
      * @param {Element} notificationElement
      */
     Notification.prototype.remove = function (notificationElement) {
@@ -413,7 +414,7 @@ module.exports = (function () {
 
     /**
      * Subscribe event listener
-     * 
+     *
      * @param   {function} callback
      * @returns {Notification}
      */
