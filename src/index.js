@@ -2,6 +2,7 @@
   if (typeof exports === 'object' && typeof module !== 'undefined') {
     module.exports = factory(
       require('jquery'),
+      require('./core/element'),
       require('./components/notifications/alert'),
       require('./components/notifications/toastr'),
       require('index.css'),
@@ -10,7 +11,7 @@
   } else {
     root.Smartajax = factory(root.jQuery, root.bootstrap, root.toastr, root.alert, root);
   }
-}(typeof window !== 'undefined' ? window : this, function (jQuery, AlertNotification, ToastrNotification, styles, Loader, root) {
+}(typeof window !== 'undefined' ? window : this, function (jQuery, Element, AlertNotification, ToastrNotification, styles, Loader, root) {
 
   var _classCallCheck = function (instance, Constructor) {
     if (!(instance instanceof Constructor)) {
@@ -243,6 +244,10 @@ Loader.show(document.getElementById('overlaydiv'));
 setTimeout(function() {
 Loader.hide('#overlaydiv');
 }, 5000);
+
+
+  var firstElement = new Element(document.getElementById('firstLink'));
+Smartajax.testElement = firstElement;
   return Smartajax;
 
 }));

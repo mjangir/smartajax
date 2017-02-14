@@ -48,6 +48,7 @@
   },
   "homepage": "https://github.com/krasimir/webpack-library-starter",
   "dependencies": {
+    "eventemitter3": "^2.0.2",
     "extract-text-webpack-plugin": "^1.0.1"
   }
 }
