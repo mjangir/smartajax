@@ -5,7 +5,7 @@ module.exports = (function () {
 
     'use strict';
 
-    function _createXhr () {
+    function _setupXHR () {
         if(window.XMLHttpRequest === undefined) {
             window.XMLHttpRequest = function() {
                 try {
@@ -26,15 +26,6 @@ module.exports = (function () {
         }
     }
 
-    function _updateXhrOptions () {
-        // Setup timeout
-        if (this.options.ajaxTimeout) {
-            this.xhr.timeout = this.options.ajaxTimeout;
-        }
-        // Setup readystate change
-        this.xhr.onreadystatechange = _readystateChange.bind(this);
-    }
-
     function _setContentType () {
         if (this.options.ajaxContentType) {
             this.xhr.setRequestHeader("Content-Type", this.options.ajaxContentType);
@@ -53,7 +44,26 @@ module.exports = (function () {
         }
     }
 
-    function _readystateChange () {
+    function _setupXHROnAbort () {
+        this.xhr.onabort = (function () {
+            this.emit('onAbort', this.xhr);
+        }).bind(this);
+    }
+
+    function _setupXHROnTimeout () {
+        if (this.options.ajaxTimeout) {
+            this.xhr.timeout = this.options.ajaxTimeout;
+        }
+        this.xhr.onabort = (function () {
+            this.emit('onTimeout', this.xhr);
+        }).bind(this);
+    }
+
+    function _setupXHRReadyState () {
+        this.xhr.onreadystatechange = _setupOnReadyStateChange.bind(this);
+    }
+
+    function _setupOnReadyStateChange () {
         var xhrResult;
 
         if (this.xhr.readyState === 4) {
@@ -77,6 +87,12 @@ module.exports = (function () {
         return result;
     }
 
+    function _updateXHROptions () {
+        _setupXHROnAbort.call(this);
+        _setupXHROnTimeout.call(this);
+        _setupXHRReadyState.call(this);
+    }
+
     /**
      * Constructor function
      */
@@ -85,8 +101,8 @@ module.exports = (function () {
         this.xhr        = null;
         this.emitter    = new EventEmitter();
 
-        _createXhr.call(this);
-        _updateXhrOptions.call(this);
+        _setupXHR.call(this);
+        _updateXHROptions.call(this);
     };
 
     Ajax.prototype.doRequest = function(data) {
@@ -100,17 +116,14 @@ module.exports = (function () {
             this.options.ajaxUserName,
             this.options.ajaxPassword
         );
-         //Setup content-type
         _setContentType.call(this);
-        // Setup headers
         _setRequestHeaders.call(this);
-        // Send request
         this.xhr.send(data);
     }
 
     Ajax.prototype.setOptions = function(opts) {
-        this.options = Utils.extend(opts, this.options);
-        _updateXhrOptions.call(this);
+        this.options = Utils.extend(this.options, opts);
+        _updateXHROptions.call(this);
         return this;
     }
 

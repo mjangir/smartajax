@@ -10,8 +10,9 @@
 <a
 class="first"
 id="firstLink"
-href="#",
-data-sa-ajax-url="http://localhost/test"
+href="#"
+data-sa-ajax-url="http://localhost/test/",
+data-sa-ajax-on-success="myAjaxonSuccess"
 >First1</a>
 
 
@@ -50,7 +51,9 @@ data-sa-ajax-url="http://localhost/test"
 <script type="text/javascript" src="../lib/smartajax.js"></script>
 <script type="text/javascript">
 
-
+function myAjaxonSuccess(saXhr, response) {
+  console.log("Third On Success", response);
+}
 </script>
 </body>
 </html>

@@ -9,6 +9,34 @@ module.exports = (function () {
 
     'use strict';
 
+    function _resolveFunctionName(func) {
+        var obj;
+
+        if (typeof func === 'function') {
+            return func;
+        }
+        if (typeof func === 'string') {
+            if (func.indexOf('.') <= -1 && typeof window[func] === 'function') {
+                return window[func];
+            } else {
+                obj = func.split('.').reduce(function(o, i) {
+                    return o[i];
+                }, window);
+                if (typeof obj === 'function') {
+                    return obj;
+                }
+            }
+        }
+        return null;
+    }
+
+    function _camelizeNodeName (str) {
+        str = str.replace('data-sa-','').replace(/-/g,' ');
+        return str.replace(/(?:^\w|[A-Z]|\b\w)/g, function(letter, index) {
+            return index == 0 ? letter.toLowerCase() : letter.toUpperCase();
+        }).replace(/\s+/g, '');
+    }
+
     function _handlerElementAjaxSuccess (saXhr, response) {
         this.emit('sa:on-ajax-success', saXhr, response);
     }
@@ -46,7 +74,7 @@ module.exports = (function () {
     }
 
     function _ajaxOnSuccess (saXhr, response) {
-        console.log(saXhr, response);
+        console.log("First on success", response);
     }
 
     function _ajaxOnError (saXhr, response) {
@@ -54,15 +82,15 @@ module.exports = (function () {
     }
 
     function _ajaxOnComplete (saXhr, response) {
-        console.log(saXhr, response);
+        //console.log(saXhr, response);
     }
 
     function _ajaxOnAbort (saXhr, response) {
-        console.log(saXhr, response);
+        //console.log(saXhr, response);
     }
 
     function _ajaxOnTimeout (saXhr, response) {
-        console.log(saXhr, response);
+        //console.log(saXhr, response);
     }
 
     /**
@@ -71,12 +99,12 @@ module.exports = (function () {
      * @return {void}
      */
     function _bindClassEvents () {
-        this.on('sa:on-ajax-before', this.options.ajaxBeforeSend, this);
-        this.on('sa:on-ajax-success', this.options.ajaxOnSuccess, this);
-        this.on('sa:on-ajax-error', this.options.ajaxOnError, this);
-        this.on('sa:on-ajax-complete', this.options.ajaxOnComplete, this);
-        this.on('sa:on-ajax-abort', this.options.ajaxOnAbort, this);
-        this.on('sa:on-ajax-timeout', this.options.ajaxOnTimeout, this);
+        this.on('sa:on-ajax-before', _resolveFunctionName(this.options.ajaxBeforeSend), this);
+        this.on('sa:on-ajax-success', _resolveFunctionName(this.options.ajaxOnSuccess), this);
+        this.on('sa:on-ajax-error', _resolveFunctionName(this.options.ajaxOnError), this);
+        this.on('sa:on-ajax-complete', _resolveFunctionName(this.options.ajaxOnComplete), this);
+        this.on('sa:on-ajax-abort', _resolveFunctionName(this.options.ajaxOnAbort), this);
+        this.on('sa:on-ajax-timeout', _resolveFunctionName(this.options.ajaxOnTimeout), this);
     }
 
     /**
@@ -154,27 +182,18 @@ module.exports = (function () {
 
     function _updateElementAttributesToOptions () {
         var attribute,
-            element     = this.element,
-            camelize    = function(str) {
-                str = str.replace('data-sa-','').replace('-',' ');
-                return str.replace(/(?:^\w|[A-Z]|\b\w)/g, function(letter, index) {
-                    return index == 0 ? letter.toLowerCase() : letter.toUpperCase();
-                }).replace(/\s+/g, '');
-            };
+            element = this.element;
 
         for (var i = 0, attrs = element.attributes, n = attrs.length; i < n; i++) {
             attribute = attrs[i];
-            if (typeof this.options[camelize(attribute.nodeName)] !== 'undefined') {
-                this.options[camelize(attribute.nodeName)] = attribute.nodeValue;
+            if (typeof this.options[_camelizeNodeName(attribute.nodeName)] !== 'undefined') {
+                this.options[_camelizeNodeName(attribute.nodeName)] = attribute.nodeValue;
             }
         }
     }
 
     function _prepareAjaxRequestData () {
-        var data;
-        data = this.options.ajaxData;
-        //data = this.emit('sa:on-ajax-before');
-        return data;
+        this.emit('sa:on-ajax-before', this.options.ajaxData);
     }
 
     /**
@@ -191,7 +210,7 @@ module.exports = (function () {
             ajaxAsync               : true,
             ajaxUserName            : null,
             ajaxPassword            : null,
-            ajaxContentType         : 'application/json',
+            ajaxContentType         : 'application/x-www-form-urlencoded',
             ajaxTimeout             : 30000,
             ajaxRequestHeaders      : {'x-request-with': 'smartajax'},
             ajaxData                : {},
@@ -225,7 +244,7 @@ module.exports = (function () {
 
         this.emitter    = new EventEmitter();
         this.element    = element;
-        this.options    = (typeof options === 'object') ? Utils.extend(options, defaultOptions) : defaultOptions;
+        this.options    = (typeof options === 'object') ? Utils.extend(defaultOptions, options) : defaultOptions;
         this.ajax       = new Ajax(this.options);
         this.alert      = Alert;
         this.toastr     = Toastr;
@@ -243,7 +262,27 @@ module.exports = (function () {
     }
 
     Element.prototype.setOptions = function(opts) {
-        this.options    = (typeof opts === 'object') ? Utils.extend(opts, this.options) : this.options;
+        var element                 = this.element,
+            attributes              = element.attributes,
+            attrLength              = attributes.length,
+            elementAttributeNodes   = [];
+
+        if(typeof opts === 'object') {
+
+            for (var i = 0; i < attrLength; i++) {
+                elementAttributeNodes.push(_camelizeNodeName(attributes[i].nodeName));
+            }
+
+            for (var i in opts) {
+                if(opts.hasOwnProperty(i)) {
+                    if(elementAttributeNodes.indexOf(i) > 0) {
+                        delete opts[i];
+                    }
+                }
+            }
+        }
+        this.options = (typeof opts === 'object') ? Utils.extend(this.options, opts) : this.options;
+        _bindClassEvents.call(this);
         this.ajax.setOptions(this.options);
         return this;
     }

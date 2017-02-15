@@ -245,9 +245,20 @@ setTimeout(function() {
 Loader.hide('#overlaydiv');
 }, 5000);
 
+window.onload = function() {
+    var firstElement = new Element(document.getElementById('firstLink'));
+    firstElement.setOptions({
+      ajaxOnSuccess: function(saXhr, response) {
+        console.log("Second On Success", response);
+      }
+    });
+    firstElement.on('sa:on-ajax-success', function(saXhr, response) {
+      console.log("Final on success", response);
+    })
+    Smartajax.testElement = firstElement;
+}
 
-  var firstElement = new Element(document.getElementById('firstLink'));
-Smartajax.testElement = firstElement;
+
   return Smartajax;
 
 }));
