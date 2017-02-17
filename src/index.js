@@ -1,17 +1,16 @@
 (function (root, factory) {
   if (typeof exports === 'object' && typeof module !== 'undefined') {
     module.exports = factory(
-      require('jquery'),
       require('./core/element'),
       require('./components/notifications/alert'),
       require('./components/notifications/toastr'),
-      require('index.css'),
       require('./components/loader'),
+      require('index.css'),
       global || root);
   } else {
-    root.Smartajax = factory(root.jQuery, root.bootstrap, root.toastr, root.alert, root);
+    root.Smartajax = factory(root.toastr, root.alert, root);
   }
-}(typeof window !== 'undefined' ? window : this, function (jQuery, Element, AlertNotification, ToastrNotification, styles, Loader, root) {
+}(typeof window !== 'undefined' ? window : this, function (Element, AlertNotification, ToastrNotification, Loader, styles, root) {
 
   var _classCallCheck = function (instance, Constructor) {
     if (!(instance instanceof Constructor)) {

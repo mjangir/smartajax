@@ -1,3 +1,7 @@
+/*global
+require, module, console
+*/
+
 var utils = require('../../utils');
 
 module.exports = (function () {
@@ -42,6 +46,26 @@ module.exports = (function () {
             newestOnTop:        true,
             preventDuplicates:  true
         };
+    
+    /**
+     * Remove notification
+     *
+     * @param {Element} notificationElement
+     */
+    function removeNotification(notificationElement) {
+
+        if (utils.isElementVisible(notificationElement)) {
+            return;
+        }
+
+        notificationElement.remove();
+        notificationElement = null;
+
+        if (typeof container !== 'undefined' && container !== null && container.children.length === 0) {
+            container.remove();
+            previousNotification = undefined;
+        }
+    }
 
     /**
      * Notify browser
@@ -68,7 +92,7 @@ module.exports = (function () {
                 intervalId:     null,
                 hideEta:        null,
                 maxHideTime:    null
-            }
+            };
 
         if (typeof (map.optionsOverride) !== 'undefined') {
             options         = utils.extend(options, map.optionsOverride);
@@ -254,26 +278,6 @@ module.exports = (function () {
         }
 
         return container;
-    }
-
-    /**
-     * Remove notification
-     *
-     * @param {Element} notificationElement
-     */
-    function removeNotification(notificationElement) {
-
-        if (utils.isElementVisible(notificationElement)) {
-            return;
-        }
-
-        notificationElement.remove();
-        notificationElement = null;
-
-        if (typeof container !== 'undefined' && container !== null && container.children.length === 0) {
-            container.remove();
-            previousNotification = undefined;
-        }
     }
 
     /**

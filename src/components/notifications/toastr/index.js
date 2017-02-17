@@ -1,3 +1,6 @@
+/*global
+require, module
+*/
 var utils               = require('../../../utils');
 var baseNotification    = require('../notification');
 var style               = require('./style.css');

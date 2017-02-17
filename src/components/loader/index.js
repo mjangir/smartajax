@@ -1,3 +1,7 @@
+/*global
+alert, confirm, console, Debug, opera, prompt, WSH, require, module, jQuery, NodeList
+*/
+
 var utils = require('../../utils');
 
 module.exports = (function () {
@@ -28,173 +32,172 @@ module.exports = (function () {
             resizeInterval  : 50,
             size            : "50%",
             zIndex          : 9999
+        },
+
+        resolveContainer = function (container) {
+
+            if (typeof container === 'string') {
+                return (container.charAt(0) === '.') ? document.querySelectorAll(container) : document.querySelector(container);
+            }
+
+            if (typeof jQuery !== 'undefined' && container instanceof jQuery) {
+                return container.get(0);
+            }
+
+            return container;
+        },
+        
+        createProgressLoader = function () {
+
+        },
+        
+        createSpinnerLoader = function () {
+            var overlay,
+                fontAwesome,
+                options = this.getOptions();
+
+            overlay                         = document.createElement('div');
+            overlay.className               = 'sa-loading-overlay';
+            overlay.style.backgroundColor   = options.backgroundColor;
+            overlay.style.display           = 'flex';
+            overlay.style.flexDirection     = 'column';
+            overlay.style.alignItems        = 'center';
+            overlay.style.justifyContent    = 'center';
+
+            if (typeof options.zIndex !== 'undefined') {
+                overlay.style.zIndex = options.zIndex;
+            }
+
+            if (options.image) {
+                overlay.style.backgroundImage       = "url(" + options.image + ")";
+                overlay.style.backgroundPosition    = options.imagePosition;
+                overlay.style.backgroundRepeat      = "no-repeat";
+            }
+
+            if (typeof options.fontawesome !== 'undefined') {
+                fontAwesome             = document.createElement('div');
+                fontAwesome.className   = 'sa-loading-overlay-fontawesome ' + options.fontawesome;
+                overlay.appendChild(fontAwesome);
+            }
+            return overlay;
+        },
+
+        createLoader = function () {
+            var options = this.getOptions();
+            return (options.type === 'progress') ? createProgressLoader.call(this) : createSpinnerLoader.call(this);
+        },
+        
+        resizeSpinnerLoader = function (container, overlay, options, wholePage) {
+            var x, c, size;
+            
+            if (!wholePage) {
+                x = (container.style.position === "fixed") ? utils.getOffsetRelativeToDocument(container) : {
+                    left: container.offsetLeft,
+                    top: container.offsetTop
+                };
+
+                overlay.style.top       = x.top + parseInt(container.style.borderTopWidth, 10);
+                overlay.style.left      = x.left + parseInt(container.style.borderLeftWidth, 10);
+                overlay.style.width     = container.clientWidth;
+                overlay.style.height    = container.clientHeight;
+            }
+
+            c    = wholePage ? document.querySelector('body') : container;
+            size = "auto";
+            if (options.size && options.size !== "auto") {
+                size = Math.min(c.clientWidth, c.clientHeight) * parseFloat(options.size) / 100;
+
+                if (options.maxSize && size > parseInt(options.maxSize, 10)) {
+                    size = parseInt(options.maxSize, 10) + "px";
+                }
+                if (options.minSize && size < parseInt(options.minSize, 10)) {
+                    size = parseInt(options.minSize, 10) + "px";
+                }
+            }
+            overlay.style.backgroundSize = size;
+            //overlay.children(".loadingoverlay_fontawesome").css("font-size", size);
+        },
+
+        appendLoader = function (container, overlay) {
+            var wholePage       = (container.tagName === 'BODY') ? true : false,
+                cloneOverlay    = overlay.cloneNode(true),
+                resizeIntervalId;
+
+            if (wholePage) {
+                cloneOverlay.style.position = 'fixed';
+                cloneOverlay.style.top      = 0;
+                cloneOverlay.style.left     = 0;
+                cloneOverlay.style.width    = '100%';
+                cloneOverlay.style.height   = '100%';
+            } else {
+                cloneOverlay.style.position = (container.style.position === "fixed") ? "fixed" : "absolute";
+            }
+
+            container.smartajaxLoadingOverlay                   = cloneOverlay;
+            container.smartajaxLoadingOverlayFadeOutDuration    = options.fade[1];
+            cloneOverlay.style.opacity                          = 0;
+
+            resizeSpinnerLoader(container, cloneOverlay, options, wholePage);
+
+            if (options.resizeInterval > 0) {
+                resizeIntervalId = setInterval(function () {
+                    resizeSpinnerLoader(container, overlay, options, wholePage);
+                }, options.resizeInterval);
+                container.smartajaxLoadingOverlayIntervalId = resizeIntervalId;
+            }
+
+            document.querySelector('body').appendChild(cloneOverlay);
+
+            utils.design.fadeIn(cloneOverlay, {
+                duration: options.fade[0]
+            });
+        },
+        
+        showLoader = function (container, overlay) {
+            var i;
+            // TO DO trigger on loader start event
+            if (container instanceof NodeList) {
+                for (i = 0; i < container.length; i = i + 1) {
+                    appendLoader(container[i], overlay);
+                }
+            } else {
+                appendLoader(container, overlay);
+            }
+        },
+        
+        removeLoader = function (container) {
+            var resizeIntervalId;
+
+            if (typeof container.smartajaxLoadingOverlay !== 'undefined') {
+                resizeIntervalId = container.smartajaxLoadingOverlayIntervalId;
+                if (resizeIntervalId) {
+                    clearInterval(resizeIntervalId);
+                }
+                utils.design.fadeOut(container.smartajaxLoadingOverlay, {
+                    duration: container.smartajaxLoadingOverlayFadeOutDuration,
+                    complete: function () {
+                        container.smartajaxLoadingOverlay.remove();
+                        delete container.smartajaxLoadingOverlay;
+                        delete container.smartajaxLoadingOverlayFadeOutDuration;
+                        delete container.smartajaxLoadingOverlayIntervalId;
+                    }
+                });
+            }
+        },
+
+        hideLoader = function (container) {
+            var i;
+            // TO DO trigger on loader start event
+            if (container instanceof NodeList) {
+                for (i = 0; i < container.length; i = i + 1) {
+                    removeLoader(container[i]);
+                }
+            } else {
+                removeLoader(container);
+            }
+            // TO DO trigger on loader complete event
         };
 
-    function _resolveContainer(container) {
-
-        if (typeof container === 'string') {
-            return (container.charAt(0) === '.') ? document.querySelectorAll(container) : document.querySelector(container);
-        }
-
-        if (typeof jQuery !== 'undefined' && container instanceof jQuery) {
-            return container.get(0);
-        }
-
-        return container;
-    };
-
-    function _createLoader() {
-        var options = this.getOptions();
-        return (options.type === 'progress') ? _createProgressLoader.call(this) : _createSpinnerLoader.call(this);
-    };
-
-    function _createSpinnerLoader() {
-        var overlay,
-            fontAwesome,
-            options = this.getOptions();
-
-        overlay                         = document.createElement('div');
-        overlay.className               = 'sa-loading-overlay';
-        overlay.style.backgroundColor   = options.backgroundColor;
-        overlay.style.display           = 'flex';
-        overlay.style.flexDirection     = 'column';
-        overlay.style.alignItems        = 'center';
-        overlay.style.justifyContent    = 'center';
-
-        if (typeof options.zIndex !== 'undefined') {
-            overlay.style.zIndex = options.zIndex;
-        }
-
-        if (options.image) {
-            overlay.style.backgroundImage       = "url(" + options.image + ")";
-            overlay.style.backgroundPosition    = options.imagePosition;
-            overlay.style.backgroundRepeat      = "no-repeat";
-        }
-
-        if (typeof options.fontawesome !== 'undefined') {
-            fontAwesome             = document.createElement('div');
-            fontAwesome.className   = 'sa-loading-overlay-fontawesome ' + options.fontawesome;
-            overlay.appendChild(fontAwesome);
-        }
-        return overlay;
-    };
-
-    function _createProgressLoader() {
-
-    };
-
-    function _showLoader(container, overlay) {
-        var i;
-        // TO DO trigger on loader start event
-        if (container instanceof NodeList) {
-            for (i = 0; i < container.length; i++) {
-                _appendLoader(container[i], overlay);
-            }
-        } else {
-            _appendLoader(container, overlay);
-        }
-    };
-
-    function _appendLoader(container, overlay) {
-        var cloneOverlay,
-            wholePage       = (container.tagName == 'BODY') ? true : false,
-            cloneOverlay    = overlay.cloneNode(true);
-
-        if (wholePage) {
-            cloneOverlay.style.position = 'fixed';
-            cloneOverlay.style.top      = 0;
-            cloneOverlay.style.left     = 0;
-            cloneOverlay.style.width    = '100%';
-            cloneOverlay.style.height   = '100%';
-        } else {
-            cloneOverlay.style.position = (container.style.position == "fixed") ? "fixed" : "absolute";
-        }
-
-        container.smartajaxLoadingOverlay                   = cloneOverlay;
-        container.smartajaxLoadingOverlayFadeOutDuration    = options.fade[1];
-        cloneOverlay.style.opacity                          = 0;
-
-        _resizeSpinnerLoader(container, cloneOverlay, options, wholePage);
-
-        if (options.resizeInterval > 0) {
-            var resizeIntervalId = setInterval(function () {
-                _resizeSpinnerLoader(container, overlay, options, wholePage);
-            }, options.resizeInterval);
-            container.smartajaxLoadingOverlayIntervalId = resizeIntervalId;
-        }
-
-        document.querySelector('body').appendChild(cloneOverlay);
-
-        utils.design.fadeIn(cloneOverlay, {
-            duration: options.fade[0]
-        });
-    };
-
-    function _resizeSpinnerLoader(container, overlay, options, wholePage) {
-        if (!wholePage) {
-            var x = (container.style.position == "fixed") ? utils.getOffsetRelativeToDocument(container) : {
-                left: container.offsetLeft,
-                top: container.offsetTop
-            };
-
-            overlay.style.top       = x.top + parseInt(container.style.borderTopWidth, 10);
-            overlay.style.left      = x.left + parseInt(container.style.borderLeftWidth, 10);
-            overlay.style.width     = container.clientWidth;
-            overlay.style.height    = container.clientHeight;
-        }
-
-        var c    = wholePage ? document.querySelector('body') : container;
-        var size = "auto";
-        if (options.size && options.size != "auto") {
-            size = Math.min(c.clientWidth, c.clientHeight) * parseFloat(options.size) / 100;
-
-            if (options.maxSize && size > parseInt(options.maxSize, 10)) {
-                size = parseInt(options.maxSize, 10) + "px";
-            }
-            if (options.minSize && size < parseInt(options.minSize, 10)) {
-                size = parseInt(options.minSize, 10) + "px";
-            }
-        }
-        overlay.style.backgroundSize = size;
-        //overlay.children(".loadingoverlay_fontawesome").css("font-size", size);
-    };
-
-    function _hideLoader(container) {
-        var i;
-        // TO DO trigger on loader start event
-        if (container instanceof NodeList) {
-            for (i = 0; i < container.length; i++) {
-                _removeLoader(container[i]);
-            }
-        } else {
-            _removeLoader(container);
-        }
-        // TO DO trigger on loader complete event
-    };
-
-    function _removeLoader(container) {
-        var resizeIntervalId;
-
-        if (typeof container.smartajaxLoadingOverlay !== 'undefined') {
-            resizeIntervalId = container.smartajaxLoadingOverlayIntervalId;
-            if (resizeIntervalId) {
-                clearInterval(resizeIntervalId);
-            }
-            utils.design.fadeOut(container.smartajaxLoadingOverlay, {
-                duration: container.smartajaxLoadingOverlayFadeOutDuration,
-                complete: function () {
-                    container.smartajaxLoadingOverlay.remove();
-                    delete container.smartajaxLoadingOverlay;
-                    delete container.smartajaxLoadingOverlayFadeOutDuration;
-                    delete container.smartajaxLoadingOverlayIntervalId;
-                }
-            });
-        }
-    };
-
-    /**
-     * Constructor function
-     */
     Loader = function () {
 
     };
@@ -211,7 +214,7 @@ module.exports = (function () {
             options.fade = [0, 0];
         } else if (options.fade === true) {
             options.fade = [400, 200];
-        } else if (typeof options.fade == "string" || typeof options.fade == "number") {
+        } else if (typeof options.fade === "string" || typeof options.fade === "number") {
             options.fade = [options.fade, options.fade];
         }
     };
@@ -228,17 +231,17 @@ module.exports = (function () {
     Loader.prototype.show = function (container, options) {
         var overlay,
             show,
-            options = options || {};
+            opts = options || {};
 
-        this.setOptions(options);
-        container   = _resolveContainer(container);
-        overlay     = _createLoader.call(this);
-        show        = _showLoader.call(this, container, overlay);
+        this.setOptions(opts);
+        container   = resolveContainer(container);
+        overlay     = createLoader.call(this);
+        show        = showLoader.call(this, container, overlay);
     };
 
     Loader.prototype.hide = function (container) {
-        container = _resolveContainer(container);
-        return _hideLoader.call(this, container);
+        container = resolveContainer(container);
+        return hideLoader.call(this, container);
     };
 
     Loader.prototype.isLoading = function (container) {
