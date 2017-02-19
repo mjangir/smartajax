@@ -1,24 +1,24 @@
 var utils = {
-getOffsetRelativeToDocument: function(element) {
-    var rect        = element.getBoundingClientRect(),
-        scrollLeft  = window.pageXOffset || document.documentElement.scrollLeft,
-        scrollTop   = window.pageYOffset || document.documentElement.scrollTop;
-    return { top: rect.top + scrollTop, left: rect.left + scrollLeft }
-},
-addClass: function(element, classes) {
-    if(typeof classes === 'undefined' || classes === null || classes === '' || !classes) {
-        return;
-    }
-    var classList = (classes.indexOf(' ') > -1) ? classes.split(' ') : classes;
-    if(Array.isArray(classList)) {
-        for(var i = 0; i < classList.length; i++) {
-            element.classList.add(classList[i]);
+    getOffsetRelativeToDocument: function(element) {
+        var rect        = element.getBoundingClientRect(),
+            scrollLeft  = window.pageXOffset || document.documentElement.scrollLeft,
+            scrollTop   = window.pageYOffset || document.documentElement.scrollTop;
+        return { top: rect.top + scrollTop, left: rect.left + scrollLeft }
+    },
+    addClass: function(element, classes) {
+        if(typeof classes === 'undefined' || classes === null || classes === '' || !classes) {
+            return;
         }
-    } else {
-        element.classList.add(classList);
-    }
-    return element;
-},
+        var classList = (classes.indexOf(' ') > -1) ? classes.split(' ') : classes;
+        if(Array.isArray(classList)) {
+            for(var i = 0; i < classList.length; i++) {
+                element.classList.add(classList[i]);
+            }
+        } else {
+            element.classList.add(classList);
+        }
+        return element;
+    },
   escapeHtml: function (source) {
     if (source == null) {
         source = '';
@@ -62,6 +62,16 @@ addClass: function(element, classes) {
     var style = window.getComputedStyle(el);
     return (style.display === 'none' || style.visibility == 'hidden')
   },
+    
+    isElement: function (obj) {
+       return !!(obj && obj.nodeType === 1);
+    },
+      generateUniqueId: function () {
+          function s4() {
+                return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+            }
+            return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+      },
 
   design: {
     easing: {

@@ -141,17 +141,21 @@ module.exports = (function () {
             }
 
             function bindClickAjax() {
-                element.addEventListener('click', (function (event) {
+                context.clickAjaxHandler =  (function (event) {
                     event.preventDefault();
                     this.startAjaxRequest();
-                }.bind(context)), false);
+                }.bind(context));
+                
+                element.addEventListener('click', context.clickAjaxHandler, false);
             }
 
             function bindSubmitAjax() {
-                element.addEventListener('submit', (function (event) {
+                context.submitAjaxHandler = (function (event) {
                     event.preventDefault();
                     this.startAjaxRequest();
-                }.bind(context)), false);
+                }.bind(context));
+                                             
+                element.addEventListener('submit', context.submitAjaxHandler, false);
             }
 
             // Bind actual events
@@ -169,6 +173,22 @@ module.exports = (function () {
                 bindSubmitAjax();
             }
         },
+        
+        detatchElementEvents = function (element) {
+            if (element.getAttribute('data-sa-request-style') === 'interval') {
+                clearTimeout(this.requestIntervalId);
+            } else if (element.getAttribute('data-sa-request-style') === 'timeout') {
+                clearTimeout(this.requestTimerId);
+            } else if (element.nodeName === 'A' ||
+                    element.nodeName === 'span' ||
+                    element.nodeName === 'div' ||
+                    element.nodeName === 'i'
+                    ) {
+                element.removeEventListener('click', this.clickAjaxHandler);
+            } else if (element.nodeName === 'FORM') {
+                element.removeEventListener('submit', this.submitAjaxHandler);
+            }
+        },
 
         updateElementAttributesToOptions = function () {
             var attribute,
@@ -182,6 +202,12 @@ module.exports = (function () {
                 if (typeof this.options[camelizeNodeName(attribute.nodeName)] !== 'undefined') {
                     this.options[camelizeNodeName(attribute.nodeName)] = attribute.nodeValue;
                 }
+            }
+            
+            if (this.element.getAttribute('href')) {
+                this.options['ajaxUrl'] = this.element.getAttribute('href');
+            } else if (this.element.getAttribute('action')) {
+                this.options['ajaxUrl'] = this.element.getAttribute('action');
             }
         },
 
@@ -277,6 +303,14 @@ module.exports = (function () {
         bindClassEvents.call(this);
         this.ajax.setOptions(this.options);
         return this;
+    };
+    
+    Element.prototype.destroy = function () {
+        detatchElementEvents.call(this, this.element);
+    };
+    
+    Element.prototype.getDomElement = function () {
+        return this.element;  
     };
 
     /**
